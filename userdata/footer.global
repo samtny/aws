@@ -1,0 +1,9 @@
+# footer.global
+
+echo END
+date '+%Y-%m-%d %H:%M:%S'
+
+echo "done" >> /home/ubuntu/userdata
+
+exit 0
+

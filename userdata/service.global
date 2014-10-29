@@ -1,0 +1,20 @@
+# service.global
+
+DEPLOY_USER="%%DEPLOY_USER%%"
+
+adduser $DEPLOY_USER --shell /bin/bash --gecos "$DEPLOY_USER, None, None, $DEPLOY_USER" --disabled-password
+
+mkdir -p /home/$DEPLOY_USER/.ssh
+
+echo "%%DEPLOY_USER_PUBKEY%%" >> authorized_keys
+
+mv authorized_keys /home/$DEPLOY_USER/.ssh/authorized_keys
+
+chown -R $DEPLOY_USER: /home/$DEPLOY_USER/.ssh
+chmod 600 /home/$DEPLOY_USER/.ssh/authorized_keys
+
+echo "$DEPLOY_USER ALL= NOPASSWD: /usr/bin/service" >> 80-$DEPLOY_USER
+mv 80-$DEPLOY_USER /etc/sudoers.d/80-$DEPLOY_USER
+chown root: /etc/sudoers.d/80-$DEPLOY_USER
+chmod 0440 /etc/sudoers.d/80-$DEPLOY_USER
+

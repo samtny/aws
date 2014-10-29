@@ -1,0 +1,4 @@
+# go
+
+rm -rf /var/lib/go-agent/config
+

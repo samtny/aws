@@ -1,0 +1,22 @@
+# redis
+
+NC_HOST=google.com
+NC_PORT=80
+NC_SLEEP=1
+
+nc -w 1 -z $NC_HOST $NC_PORT || true
+RETVAL=$?
+while [ ! $RETVAL -eq 0 ]; do
+  sleep $NC_SLEEP
+  nc -w 1 -z $NC_HOST $NC_PORT || true
+  RETVAL=$?
+done
+
+apt-get update
+
+apt-get install -y redis-server
+
+sed -i -e "s/bind 127.0.0.1/#bind 127.0.0.1/g" /etc/redis/redis.conf
+
+service redis-server restart
+

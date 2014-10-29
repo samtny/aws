@@ -1,0 +1,18 @@
+#!/bin/bash
+
+# header.global
+
+set -x
+exec > >(tee /var/log/user-data.log|logger -t user-data ) 2>&1
+echo BEGIN
+date '+%Y-%m-%d %H:%M:%S'
+
+echo "begin" >> /home/ubuntu/userdata && chmod 744 /home/ubuntu/userdata
+
+echo 127.0.0.1 $(hostname) >> /etc/hosts
+
+if grep -qv LC_ALL /etc/environment; then
+  echo "LC_ALL=en_US.UTF-8" >> /etc/environment
+  echo "LANG=en_US.UTF-8" >> /etc/environment
+fi
+
