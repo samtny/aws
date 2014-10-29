@@ -1,0 +1,39 @@
+#!/bin/bash
+
+set -e
+
+SLEEP_MONGO_PENDING=2
+SLEEP_BUFFER=5
+
+while ! ps aux | grep "[m]ongod" > /dev/null; do
+  sleep $SLEEP_MONGO_PENDING
+done
+
+nc -w 1 -z localhost 27017 || true
+RETVAL=$?
+while [ ! $RETVAL -eq 0 ]; do
+  sleep $SLEEP_MONGO_PENDING
+  nc -w 1 -z localhost 27017 || true
+  RETVAL=$?
+done
+
+while [ ! "$(mongo --quiet --eval "printjson(db.serverStatus().ok)" || true)" = "1" ]; do
+  sleep $SLEEP_MONGO_PENDING
+done
+
+sleep $SLEEP_BUFFER
+
+mongo <<'EOF'
+rs.initiate()
+rs.conf()
+exit
+EOF
+
+while [ ! $(mongo --quiet --eval "rs.status().ok" || true) = 1 ]; do
+  sleep $SLEEP_MONGO_PENDING
+done
+
+sleep $SLEEP_BUFFER
+
+exit 0
+
